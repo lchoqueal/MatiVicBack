@@ -15,12 +15,13 @@ class ClienteRepository {
 
     // Primero guardar en usuario
     const queryUsuario = `
-      INSERT INTO usuario (name_user, contrasena, nombres, apellidos, estado)
-      VALUES ($1, $2, $3, $4, $5)
-      ON CONFLICT (name_user) DO UPDATE SET
+      INSERT INTO usuario (user_name, contrasena, nombres, apellidos, rol, estado)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      ON CONFLICT (user_name) DO UPDATE SET
         contrasena = EXCLUDED.contrasena,
         nombres = EXCLUDED.nombres,
-        apellidos = EXCLUDED.apellidos
+        apellidos = EXCLUDED.apellidos,
+        rol = EXCLUDED.rol
       RETURNING id_usuario
     `;
 
@@ -29,6 +30,7 @@ class ClienteRepository {
       cliente.contrasena,
       cliente.nombre,
       cliente.apellidos,
+      'cliente',
       cliente.estado
     ]);
 
@@ -62,7 +64,7 @@ class ClienteRepository {
    */
   async obtenerPorId(idCliente) {
     const query = `
-      SELECT u.id_usuario, u.name_user, u.contrasena, u.nombres, u.apellidos,
+      SELECT u.id_usuario, u.user_name, u.contrasena, u.nombres, u.apellidos,
              c.telefono, c.correo, c.direccion, c.estado
       FROM usuario u
       JOIN cliente c ON u.id_usuario = c.id_usuario_cliente
@@ -83,7 +85,7 @@ class ClienteRepository {
    */
   async obtenerPorCorreo(correo) {
     const query = `
-      SELECT u.id_usuario, u.name_user, u.contrasena, u.nombres, u.apellidos,
+      SELECT u.id_usuario, u.user_name, u.contrasena, u.nombres, u.apellidos,
              c.telefono, c.correo, c.direccion, c.estado
       FROM usuario u
       JOIN cliente c ON u.id_usuario = c.id_usuario_cliente
@@ -104,7 +106,7 @@ class ClienteRepository {
    */
   async obtenerTodos() {
     const query = `
-      SELECT u.id_usuario, u.name_user, u.contrasena, u.nombres, u.apellidos,
+      SELECT u.id_usuario, u.user_name, u.contrasena, u.nombres, u.apellidos,
              c.telefono, c.correo, c.direccion, c.estado
       FROM usuario u
       JOIN cliente c ON u.id_usuario = c.id_usuario_cliente

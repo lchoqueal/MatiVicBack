@@ -13,15 +13,15 @@ class UsuarioRepository {
     usuario.validar();
 
     const query = `
-      INSERT INTO usuario (name_user, contrasena, nombres, apellidos, rol, estado)
+      INSERT INTO usuario (user_name, contrasena, nombres, apellidos, rol, estado)
       VALUES ($1, $2, $3, $4, $5, $6)
-      ON CONFLICT (name_user) DO UPDATE SET
+      ON CONFLICT (user_name) DO UPDATE SET
         contrasena = EXCLUDED.contrasena,
         nombres = EXCLUDED.nombres,
         apellidos = EXCLUDED.apellidos,
         rol = EXCLUDED.rol,
         estado = EXCLUDED.estado
-      RETURNING id_usuario, name_user, contrasena, nombres, apellidos, rol, estado
+      RETURNING id_usuario, user_name, contrasena, nombres, apellidos, rol, estado
     `;
 
     const { rows } = await db.query(query, [
@@ -41,7 +41,7 @@ class UsuarioRepository {
    */
   async obtenerPorId(id) {
     const query = `
-      SELECT id_usuario, name_user, contrasena, nombres, apellidos, estado
+      SELECT id_usuario, user_name, contrasena, nombres, apellidos, rol, estado
       FROM usuario
       WHERE id_usuario = $1
     `;
@@ -55,9 +55,9 @@ class UsuarioRepository {
    */
   async obtenerPorNombreUsuario(nombreUsuario) {
     const query = `
-      SELECT id_usuario, name_user, contrasena, nombres, apellidos, rol, estado
+      SELECT id_usuario, user_name, contrasena, nombres, apellidos, rol, estado
       FROM usuario
-      WHERE name_user = $1
+      WHERE user_name = $1
     `;
 
     const { rows } = await db.query(query, [nombreUsuario]);
@@ -69,7 +69,7 @@ class UsuarioRepository {
    */
   async obtenerTodos() {
     const query = `
-      SELECT id_usuario, name_user, nombres, apellidos, estado
+      SELECT id_usuario, user_name, nombres, apellidos, rol, estado
       FROM usuario
       WHERE estado = 'activo'
       ORDER BY nombres

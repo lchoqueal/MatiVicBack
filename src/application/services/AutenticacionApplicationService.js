@@ -44,7 +44,7 @@ class AutenticacionApplicationService {
     const token = jwt.sign(
       {
         id: usuario.id_usuario,
-        username: usuario.name_user,
+        username: usuario.user_name,
         nombre: usuario.nombres,
         rol: usuario.rol
       },
@@ -56,7 +56,7 @@ class AutenticacionApplicationService {
       token,
       usuario: {
         id: usuario.id_usuario,
-        username: usuario.name_user,
+        username: usuario.user_name,
         nombre: usuario.nombres,
         apellidos: usuario.apellidos,
         rol: usuario.rol
