@@ -5,12 +5,21 @@ const Email = require('../valueObjects/Email');
  * Usuario base del sistema
  */
 class Usuario {
-  constructor(id, nombre, email, contrasena, apellidos = '', estado = 'activo') {
+  static ROLES = {
+    ADMINISTRADOR: 'administrador',
+    EMPLEADO: 'empleado',
+    CLIENTE: 'cliente'
+  };
+
+  static VALORES_VALIDOS = Object.values(Usuario.ROLES);
+
+  constructor(id, nombre, email, contrasena, apellidos = '', rol = 'cliente', estado = 'activo') {
     this.id = id;
     this.nombre = nombre;
     this.email = email instanceof Email ? email : new Email(email);
     this.contrasena = contrasena;
     this.apellidos = apellidos;
+    this.rol = rol;
     this.estado = estado;
     this.createdAt = new Date();
   }
@@ -29,6 +38,10 @@ class Usuario {
 
     if (!this.contrasena || this.contrasena.trim() === '') {
       throw new Error('Contraseña requerida');
+    }
+
+    if (!Usuario.VALORES_VALIDOS.includes(this.rol)) {
+      throw new Error(`Rol inválido. Debe ser uno de: ${Usuario.VALORES_VALIDOS.join(', ')}`);
     }
   }
 
@@ -53,6 +66,27 @@ class Usuario {
    */
   estaActivo() {
     return this.estado === 'activo';
+  }
+
+  /**
+   * ¿Es administrador?
+   */
+  esAdministrador() {
+    return this.rol === Usuario.ROLES.ADMINISTRADOR;
+  }
+
+  /**
+   * ¿Es empleado?
+   */
+  esEmpleado() {
+    return this.rol === Usuario.ROLES.EMPLEADO;
+  }
+
+  /**
+   * ¿Es cliente?
+   */
+  esCliente() {
+    return this.rol === Usuario.ROLES.CLIENTE;
   }
 }
 

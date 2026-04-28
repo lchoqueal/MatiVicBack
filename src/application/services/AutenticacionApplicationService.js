@@ -23,6 +23,16 @@ class AutenticacionApplicationService {
       throw new Error('Usuario no encontrado');
     }
 
+    // Validar que sea administrador
+    if (usuario.rol !== 'administrador') {
+      throw new Error('Acceso denegado. Solo administradores pueden ingresar en este momento');
+    }
+
+    // Validar que esté activo
+    if (usuario.estado !== 'activo') {
+      throw new Error('Usuario inactivo');
+    }
+
     // Verificar contraseña
     const esValida = await bcrypt.compare(password, usuario.contrasena);
     
@@ -35,7 +45,8 @@ class AutenticacionApplicationService {
       {
         id: usuario.id_usuario,
         username: usuario.name_user,
-        nombre: usuario.nombres
+        nombre: usuario.nombres,
+        rol: usuario.rol
       },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
@@ -47,7 +58,8 @@ class AutenticacionApplicationService {
         id: usuario.id_usuario,
         username: usuario.name_user,
         nombre: usuario.nombres,
-        apellidos: usuario.apellidos
+        apellidos: usuario.apellidos,
+        rol: usuario.rol
       }
     };
   }
@@ -67,14 +79,14 @@ class AutenticacionApplicationService {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // Crear entidad usuario
+    // Crear entidad usuario con rol ADMINISTRADOR
     const nuevoUsuario = new Usuario(
       null,
-      username,
+      nombre,
       new Email(username + '@admin.local'),
       passwordHash,
-      nombre,
       apellidos || nombre,
+      'administrador',  // ← ROL ADMINISTRADOR
       'activo'
     );
 
@@ -82,10 +94,11 @@ class AutenticacionApplicationService {
     await this.usuarioRepository.guardar(nuevoUsuario);
 
     return {
-      mensaje: 'Usuario creado exitosamente',
+      mensaje: 'Administrador creado exitosamente',
       usuario: {
         username,
-        nombre
+        nombre,
+        rol: 'administrador'
       }
     };
   }

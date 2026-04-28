@@ -1,6 +1,7 @@
 const express = require('express');
 const ProductoController = require('../controllers/ProductoController');
 const autenticacionMiddleware = require('../../middleware/autenticacionMiddleware');
+const { esAdministrador } = require('../../middleware/rolMiddleware');
 const { validarPositivo } = require('../../middleware/validacionMiddleware');
 
 module.exports = (
@@ -27,11 +28,11 @@ module.exports = (
   // GET /productos
   router.get('/', (req, res, next) => controller.obtenerTodos(req, res, next));
 
-  // PUT /productos/:id (requiere autenticación)
-  router.put('/:id', autenticacionMiddleware, validarPositivo('precio'), (req, res, next) => controller.actualizar(req, res, next));
+  // PUT /productos/:id (requiere administrador)
+  router.put('/:id', autenticacionMiddleware, esAdministrador, validarPositivo('precio'), (req, res, next) => controller.actualizar(req, res, next));
 
-  // DELETE /productos/:id (requiere autenticación)
-  router.delete('/:id', autenticacionMiddleware, (req, res, next) => controller.eliminar(req, res, next));
+  // DELETE /productos/:id (requiere administrador)
+  router.delete('/:id', autenticacionMiddleware, esAdministrador, (req, res, next) => controller.eliminar(req, res, next));
 
   return router;
 };
