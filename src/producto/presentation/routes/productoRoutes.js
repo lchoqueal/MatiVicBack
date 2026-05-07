@@ -1,0 +1,38 @@
+const express = require('express');
+const ProductoController = require('../controllers/ProductoController');
+const autenticacionMiddleware = require('../../../shared/middleware/autenticacionMiddleware');
+const { esAdministrador } = require('../../../shared/middleware/rolMiddleware');
+const { validarPositivo } = require('../../../shared/middleware/validacionMiddleware');
+
+module.exports = (
+  obtenerProductosApplicationService,
+  actualizarProductoApplicationService,
+  eliminarProductoApplicationService
+) => {
+  const router = express.Router();
+  const controller = new ProductoController(
+    obtenerProductosApplicationService,
+    actualizarProductoApplicationService,
+    eliminarProductoApplicationService
+  );
+
+  // GET /productos/buscar (DEBE ir antes de /:id)
+  router.get('/buscar', (req, res, next) => controller.buscar(req, res, next));
+
+  // GET /productos/stock-bajo
+  router.get('/stock-bajo', (req, res, next) => controller.obtenerStockBajo(req, res, next));
+
+  // GET /productos/mas-vendidos
+  router.get('/mas-vendidos', (req, res, next) => controller.obtenerMasVendidos(req, res, next));
+
+  // GET /productos
+  router.get('/', (req, res, next) => controller.obtenerTodos(req, res, next));
+
+  // PUT /productos/:id (requiere administrador)
+  router.put('/:id', autenticacionMiddleware, esAdministrador, validarPositivo('precio'), (req, res, next) => controller.actualizar(req, res, next));
+
+  // DELETE /productos/:id (requiere administrador)
+  router.delete('/:id', autenticacionMiddleware, esAdministrador, (req, res, next) => controller.eliminar(req, res, next));
+
+  return router;
+};

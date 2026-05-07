@@ -5,27 +5,27 @@ const { Server } = require('socket.io');
 require('dotenv').config();
 
 // Middleware
-const errorHandler = require('./middleware/errorHandler');
+const errorHandler = require('./shared/middleware/errorHandler');
 
 // Repositories
-const UsuarioRepository = require('./infrastructure/persistence/UsuarioRepository');
-const ProductoRepository = require('./infrastructure/persistence/ProductoRepository');
-const CarritoRepository = require('./infrastructure/persistence/CarritoRepository');
-const BoletaRepository = require('./infrastructure/persistence/BoletaRepository');
-const ClienteRepository = require('./infrastructure/persistence/ClienteRepository');
+const UsuarioRepository = require('./usuario/infrastructure/UsuarioRepository');
+const ProductoRepository = require('./producto/infrastructure/ProductoRepository');
+const CarritoRepository = require('./carrito/infrastucture/CarritoRepository');
+const BoletaRepository = require('./boleta/infrastructure/BoletaRepository');
+const ClienteRepository = require('./cliente/infrastructure/ClienteRepository');
 
 // Application Services
-const AutenticacionApplicationService = require('./application/services/AutenticacionApplicationService');
-const CrearBoletaApplicationService = require('./application/services/CrearBoletaApplicationService');
-const AgregarProductoCarritoApplicationService = require('./application/services/AgregarProductoCarritoApplicationService');
-const ObtenerProductosApplicationService = require('./application/services/ObtenerProductosApplicationService');
-const ObtenerReportesApplicationService = require('./application/services/ObtenerReportesApplicationService');
-const ObtenerAlertasApplicationService = require('./application/services/ObtenerAlertasApplicationService');
-const ActualizarProductoApplicationService = require('./application/services/ActualizarProductoApplicationService');
-const EliminarProductoApplicationService = require('./application/services/EliminarProductoApplicationService');
+const AutenticacionApplicationService = require('./usuario/application/AutenticacionApplicationService');
+const CrearBoletaApplicationService = require('./boleta/application/CrearBoletaApplicationService');
+const AgregarProductoCarritoApplicationService = require('./carrito/application/AgregarProductoCarritoApplicationService');
+const ObtenerProductosApplicationService = require('./producto/application/ObtenerProductosApplicationService');
+const ObtenerReportesApplicationService = require('./reporte/application/ObtenerReportesApplicationService');
+const ObtenerAlertasApplicationService = require('./producto/application/ObtenerAlertasApplicationService');
+const ActualizarProductoApplicationService = require('./producto/application/ActualizarProductoApplicationService');
+const EliminarProductoApplicationService = require('./producto/application/EliminarProductoApplicationService');
 
 // Real-time
-const SocketIOEmitter = require('./infrastructure/realtime/SocketIOEmitter');
+const SocketIOEmitter = require('./shared/infrastructure/realtime/SocketIOEmitter');
 
 // Routes
 const registrarRutas = require('./presentation/routes');
