@@ -1,7 +1,7 @@
 const Boleta = require('../domain/entities/Boleta');
 const TipoVenta = require('../domain/valueObjects/TipoVenta');
-const Precio = require('../../shared/domain/valueObjects/Precio');
-const db = require('../../shared/config/db');
+const Precio = require('../../../shared/domain/valueObjects/Precio');
+const db = require('../../../shared/config/db');
 
 /**
  * Application Service: CrearBoletaApplicationService

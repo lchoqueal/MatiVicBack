@@ -1,8 +1,8 @@
 const express = require('express');
 const BoletaController = require('../controllers/BoletaController');
-const autenticacionMiddleware = require('../../shared/middleware/autenticacionMiddleware');
-const { esAdministradorOEmpleado, esAdministrador } = require('../../shared/middleware/rolMiddleware');
-const { validarCamposRequeridos } = require('../../shared/middleware/validacionMiddleware');
+const autenticacionMiddleware = require('../../../../shared/middleware/autenticacionMiddleware');
+const { esAdministradorOEmpleado, esAdministrador } = require('../../../../shared/middleware/rolMiddleware');
+const { validarCamposRequeridos } = require('../../../../shared/middleware/validacionMiddleware');
 
 module.exports = (
   crearBoletaApplicationService,

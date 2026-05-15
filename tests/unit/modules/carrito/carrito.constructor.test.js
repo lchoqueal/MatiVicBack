@@ -2,7 +2,7 @@ const Carrito = require('../../../../src/modules/carrito/domain/entities/Carrito
 const Precio = require('../../../../src/shared/domain/valueObjects/Precio');
 const CarritoVacioException = require('../../../../src/modules/carrito/domain/exceptions/CarritoVacioException');
 
-jest.mock('../../../src/shared/domain/valueObjects/Precio', () => {
+jest.mock('../../../../src/shared/domain/valueObjects/Precio', () => {
   const mockPrecio = jest.fn();
   mockPrecio.mockImplementation((monto) => ({
     monto,
