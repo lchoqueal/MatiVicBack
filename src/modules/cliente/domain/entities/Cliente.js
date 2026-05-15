@@ -1,4 +1,4 @@
-const Usuario = require('../../usuario/domain/entities/Usuario');
+const Usuario = require('../../../usuario/domain/entities/Usuario');
 
 /**
  * Entidad: Cliente (Aggregate Root)

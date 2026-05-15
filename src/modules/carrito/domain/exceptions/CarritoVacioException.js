@@ -1,4 +1,4 @@
-const DomainException = require('../../../shared/domain/exceptions/DomainException');
+const DomainException = require('../../../../shared/domain/exceptions/DomainException');
 
 class CarritoVacioException extends DomainException {
   constructor(mensaje = 'No se puede confirmar un carrito vacío') {

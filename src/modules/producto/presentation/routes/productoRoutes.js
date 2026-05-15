@@ -1,8 +1,8 @@
 const express = require('express');
 const ProductoController = require('../controllers/ProductoController');
-const autenticacionMiddleware = require('../../../shared/middleware/autenticacionMiddleware');
-const { esAdministrador } = require('../../../shared/middleware/rolMiddleware');
-const { validarPositivo } = require('../../../shared/middleware/validacionMiddleware');
+const autenticacionMiddleware = require('../../../../shared/middleware/autenticacionMiddleware');
+const { esAdministrador } = require('../../../../shared/middleware/rolMiddleware');
+const { validarPositivo } = require('../../../../shared/middleware/validacionMiddleware');
 
 module.exports = (
   obtenerProductosApplicationService,
