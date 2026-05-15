@@ -1,7 +1,7 @@
 const express = require('express');
 const AlertasController = require('../controllers/AlertasController');
-const autenticacionMiddleware = require('../../../shared/middleware/autenticacionMiddleware');
-const { esAdministrador } = require('../../../shared/middleware/rolMiddleware');
+const autenticacionMiddleware = require('../../../../shared/middleware/autenticacionMiddleware');
+const { esAdministrador } = require('../../../../shared/middleware/rolMiddleware');
 
 module.exports = (obtenerAlertasApplicationService) => {
   const router = express.Router();
