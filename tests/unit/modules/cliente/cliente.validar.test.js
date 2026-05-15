@@ -1,4 +1,4 @@
-const Cliente = require('../../../src/modules/cliente/domain/entities/Cliente');
+const Cliente = require('../../../../src/modules/cliente/domain/entities/Cliente');
 
 describe('Cliente - validar', () => {
   let cliente;

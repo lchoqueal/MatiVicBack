@@ -1,4 +1,4 @@
-const Cliente = require('../../../src/modules/cliente/domain/entities/Cliente');
+const Cliente = require('../../../../src/modules/cliente/domain/entities/Cliente');
 
 describe('Cliente - Constructor', () => {
   test('debe crear un cliente con valores iniciales correctos', () => {
