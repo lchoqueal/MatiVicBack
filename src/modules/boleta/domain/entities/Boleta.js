@@ -1,4 +1,4 @@
-const Precio = require('../../../shared/domain/valueObjects/Precio');
+const Precio = require('../../../../shared/domain/valueObjects/Precio');
 const TipoVenta = require('../valueObjects/TipoVenta');
 const BoletaInvalidaException = require('../exceptions/BoletaInvalidaException');
 
