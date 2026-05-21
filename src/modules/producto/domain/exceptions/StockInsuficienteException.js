@@ -1,4 +1,4 @@
-const DomainException = require('../../../shared/domain/exceptions/DomainException');
+const DomainException = require('../../../../shared/domain/exceptions/DomainException');
 
 class StockInsuficienteException extends DomainException {
   constructor(producto = 'Producto', disponible = 0, solicitado = 0) {
