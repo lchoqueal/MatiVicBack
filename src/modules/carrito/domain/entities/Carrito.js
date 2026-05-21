@@ -1,4 +1,4 @@
-const Precio = require('../../../shared/domain/valueObjects/Precio');
+const Precio = require('../../../../shared/domain/valueObjects/Precio');
 const CarritoVacioException = require('../exceptions/CarritoVacioException');
 
 /**
@@ -36,6 +36,7 @@ class Carrito {
 
     if (itemExistente) {
       itemExistente.cantidad += cantidad;
+      itemExistente.subtotal = itemExistente.precio.multiplicar(itemExistente.cantidad);
     } else {
       this.items.push({
         idProducto: producto.id,

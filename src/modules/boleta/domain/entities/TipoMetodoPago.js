@@ -1,4 +1,4 @@
-const DomainException = require('../../../shared/domain/exceptions/DomainException');
+const DomainException = require('../../../../shared/domain/exceptions/DomainException');
 
 /**
  * Value Object: MetodoPago

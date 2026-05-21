@@ -1,6 +1,6 @@
-const db = require('../../shared/config/db');
+const db = require('../../../shared/config/db');
 const Boleta = require('../domain/entities/Boleta');
-const Precio = require('../../shared/domain/valueObjects/Precio');
+const Precio = require('../../../shared/domain/valueObjects/Precio');
 const TipoVenta = require('../domain/valueObjects/TipoVenta');
 
 /**
