@@ -5,137 +5,43 @@ const { Server } = require('socket.io');
 require('dotenv').config();
 
 // Middleware
-const errorHandler = require('./middleware/errorHandler');
+const errorHandler = require('./shared/middleware/errorHandler');
+const SocketIOEmitter = require('./shared/infrastructure/realtime/SocketIOEmitter');
 
-// Repositories
-const UsuarioRepository = require('./infrastructure/persistence/UsuarioRepository');
-const ProductoRepository = require('./infrastructure/persistence/ProductoRepository');
-const CarritoRepository = require('./infrastructure/persistence/CarritoRepository');
-const BoletaRepository = require('./infrastructure/persistence/BoletaRepository');
-const ClienteRepository = require('./infrastructure/persistence/ClienteRepository');
+//Modulos
 
-// Application Services
-const AutenticacionApplicationService = require('./application/services/AutenticacionApplicationService');
-const CrearBoletaApplicationService = require('./application/services/CrearBoletaApplicationService');
-const AgregarProductoCarritoApplicationService = require('./application/services/AgregarProductoCarritoApplicationService');
-const ObtenerProductosApplicationService = require('./application/services/ObtenerProductosApplicationService');
-const ObtenerReportesApplicationService = require('./application/services/ObtenerReportesApplicationService');
-const ObtenerAlertasApplicationService = require('./application/services/ObtenerAlertasApplicationService');
-const ActualizarProductoApplicationService = require('./application/services/ActualizarProductoApplicationService');
-const EliminarProductoApplicationService = require('./application/services/EliminarProductoApplicationService');
+const moduloUsuario = require('./modules/usuario');
+const moduloProducto = require('./modules/producto');
+const moduloCarrito = require('./modules/carrito');
+const moduloBoleta = require('./modules/boleta');
+const moduloReporte = require('./modules/reporte');
+const moduloCliente = require('./modules/cliente');
 
-// Real-time
-const SocketIOEmitter = require('./infrastructure/realtime/SocketIOEmitter');
-
-// Routes
-const registrarRutas = require('./presentation/routes');
-
-// Crear Express app + HTTP server + Socket.IO
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE']
-  }
+  cors: { origin: '*' }
 });
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Socket.IO - Conexiones
-io.on('connection', (socket) => {
-  console.log(`[Socket.IO] Cliente conectado: ${socket.id}`);
-
-  // Unir usuario a sala privada
-  socket.on('unirse-como-usuario', (usuarioId) => {
-    socket.join(`usuario-${usuarioId}`);
-    console.log(`[Socket.IO] Usuario ${usuarioId} unido a su sala privada`);
-  });
-
-  socket.on('disconnect', () => {
-    console.log(`[Socket.IO] Cliente desconectado: ${socket.id}`);
-  });
-});
-
-// ===== INYECCIÓN DE DEPENDENCIAS =====
-
-// 1. Crear repositories
-const usuarioRepository = new UsuarioRepository();
-const productoRepository = new ProductoRepository();
-const carritoRepository = new CarritoRepository();
-const boletaRepository = new BoletaRepository();
-const clienteRepository = new ClienteRepository();
-
-const repositories = {
-  usuarioRepository,
-  productoRepository,
-  carritoRepository,
-  boletaRepository,
-  clienteRepository
-};
-
-// 2. Crear SocketIOEmitter
 const socketIOEmitter = new SocketIOEmitter(io);
 
-// 3. Crear Application Services
-const autenticacionApplicationService = new AutenticacionApplicationService(usuarioRepository);
-const crearBoletaApplicationService = new CrearBoletaApplicationService(
-  boletaRepository,
-  carritoRepository,
-  productoRepository,
-  socketIOEmitter
-);
-const agregarProductoCarritoApplicationService = new AgregarProductoCarritoApplicationService(
-  carritoRepository,
-  productoRepository,
-  socketIOEmitter
-);
-const obtenerProductosApplicationService = new ObtenerProductosApplicationService(productoRepository);
-const obtenerReportesApplicationService = new ObtenerReportesApplicationService(
-  boletaRepository,
-  productoRepository
-);
-const obtenerAlertasApplicationService = new ObtenerAlertasApplicationService(
-  productoRepository,
-  socketIOEmitter
-);
-const actualizarProductoApplicationService = new ActualizarProductoApplicationService(
-  productoRepository,
-  socketIOEmitter
-);
-const eliminarProductoApplicationService = new EliminarProductoApplicationService(
-  productoRepository
-);
+app.use('/auth', moduloUsuario());
+app.use('/productos', moduloProducto(socketIOEmitter));
+app.use('/carrito', moduloCarrito(socketIOEmitter));
+app.use('/boleta', moduloBoleta(socketIOEmitter));
+app.use('/reportes', moduloReporte());
+app.use('/cliente', moduloCliente(socketIOEmitter));
 
-const applicationServices = {
-  autenticacionApplicationService,
-  crearBoletaApplicationService,
-  agregarProductoCarritoApplicationService,
-  obtenerProductosApplicationService,
-  obtenerReportesApplicationService,
-  obtenerAlertasApplicationService,
-  actualizarProductoApplicationService,
-  eliminarProductoApplicationService
-};
+app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
 
-// 4. Registrar rutas
-registrarRutas(app, repositories, applicationServices, socketIOEmitter);
-
-// Middleware de error (DEBE estar al final)
 app.use(errorHandler);
 
-// ===== INICIAR SERVIDOR =====
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
-  console.log(`\n${'='.repeat(50)}`);
-  console.log(`✅ MatiVicBack iniciado exitosamente`);
-  console.log(`✅ Servidor corriendo en puerto ${PORT}`);
-  console.log(`📡 Socket.IO escuchando en ws://localhost:${PORT}`);
-  console.log(`🏠 http://localhost:${PORT}/health`);
-  console.log(`${'='.repeat(50)}\n`);
+  console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
 
-// Exportar para testing
 module.exports = { app, httpServer, io };
