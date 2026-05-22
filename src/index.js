@@ -29,7 +29,9 @@ app.use(express.json());
 const socketIOEmitter = new SocketIOEmitter(io);
 
 app.use('/auth', moduloUsuario());
-app.use('/productos', moduloProducto(socketIOEmitter));
+const productoModule = moduloProducto(socketIOEmitter);
+app.use('/productos', productoModule.productoRoutes);
+app.use('/productos/alertas', productoModule.alertasRoutes);
 app.use('/carrito', moduloCarrito(socketIOEmitter));
 app.use('/boleta', moduloBoleta(socketIOEmitter));
 app.use('/reportes', moduloReporte());
