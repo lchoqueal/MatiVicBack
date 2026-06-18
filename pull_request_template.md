@@ -1,0 +1,1 @@
+          [              @mentions              ](/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#mentioning-people-and-teams) de la persona o equipo responsable de revisar los cambios propuestos.
