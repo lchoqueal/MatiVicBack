@@ -27,4 +27,5 @@ Closes #
 <!-- Información importante o decisiones tomadas -->
 
 ##  Reviewers
-@mentions de los revisor
+@lchoqueal
+@gabrielcarta
