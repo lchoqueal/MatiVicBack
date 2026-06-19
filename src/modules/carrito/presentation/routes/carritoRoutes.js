@@ -1,8 +1,8 @@
 const express = require('express');
 const CarritoController = require('../controllers/CarritoController');
-const autenticacionMiddleware = require('../../../../shared/middleware/autenticacionMiddleware');
-const { esAdministradorOEmpleado } = require('../../../../shared/middleware/rolMiddleware');
-const { validarCamposRequeridos, validarPositivo } = require('../../../../shared/middleware/validacionMiddleware');
+const autenticacionMiddleware = require('../../../shared/middleware/autenticacionMiddleware');
+const { esAdministradorOEmpleado } = require('../../../shared/middleware/rolMiddleware');
+const { validarCamposRequeridos, validarPositivo } = require('../../../shared/middleware/validacionMiddleware');
 
 module.exports = (
   agregarProductoCarritoApplicationService,
