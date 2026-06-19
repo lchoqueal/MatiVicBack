@@ -1,4 +1,4 @@
-const db = require('../../../shared/config/db');
+const db = require('../../shared/config/db');
 const Usuario = require('../domain/entities/Usuario');
 
 /**
