@@ -1,5 +1,5 @@
 const Stock = require('../valueObjects/Stock');
-const Precio = require('../../../shared/domain/valueObjects/Precio');
+const Precio = require('../../../../shared/domain/valueObjects/Precio');
 
 /**
  * Entidad: Producto (Aggregate Root)

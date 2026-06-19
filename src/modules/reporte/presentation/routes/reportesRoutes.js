@@ -1,7 +1,7 @@
 const express = require('express');
 const ReportesController = require('../controllers/ReportesController');
-const autenticacionMiddleware = require('../../../shared/middleware/autenticacionMiddleware');
-const { esAdministrador } = require('../../../shared/middleware/rolMiddleware');
+const autenticacionMiddleware = require('../../../../shared/middleware/autenticacionMiddleware');
+const { esAdministrador } = require('../../../../shared/middleware/rolMiddleware');
 
 module.exports = (obtenerReportesApplicationService) => {
   const router = express.Router();
