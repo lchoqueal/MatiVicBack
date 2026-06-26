@@ -8,7 +8,7 @@ const productoRoutes =require('./presentation/routes/productoRoutes');
 module.exports = (socketIOEmitter) => {
     const productoRepository = new ProductoRepository();
 
-    const obtenerProductosApplicationService = new ObtenerAlertasApplicationService(productoRepository);
+    const obtenerProductosApplicationService = new ObtenerProductosApplicationService(productoRepository);
     const actualizarProductoApplicationService = new ActualizarProductoApplicationService(productoRepository);
     const eliminarProductoApplicationService = new EliminarProductoApplicationService(productoRepository);
 
