@@ -52,7 +52,7 @@ jobs:
           
           # Clonamos especificando explícitamente el nombre de la carpeta de destino 'repo-b'
           # Usamos de forma segura el secret GITOPS_TOKEN para no exponer credenciales
-          git clone https://${{ secrets.GITOPS_TOKEN }}@github.com/lchoqueal/MatiVicBack.git repo-b
+          git clone https://${{ secrets.GITOPS_TOKEN }}@github.com/lchoqueal/mi-proyecto-gitops.git repo-b
           
           cd repo-b
           mkdir -p k8s/desarrollo
