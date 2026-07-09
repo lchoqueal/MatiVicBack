@@ -14,58 +14,6 @@ class AutenticacionApplicationService {
   }
 
   /**
-   * Login de administrador
-   */
-  async loginAdministrador(username, password) {
-    // Obtener usuario por nombre
-    const usuario = await this.usuarioRepository.obtenerPorNombreUsuario(username);
-    
-    if (!usuario) {
-      throw new Error('Usuario no encontrado');
-    }
-
-    // Validar que sea administrador
-    if (usuario.rol !== 'administrador') {
-      throw new Error('Acceso denegado. Solo administradores pueden ingresar en este momento');
-    }
-
-    // Validar que esté activo
-    if (usuario.estado !== 'activo') {
-      throw new Error('Usuario inactivo');
-    }
-
-    // Verificar contraseña
-    const esValida = await bcrypt.compare(password, usuario.contrasena);
-    
-    if (!esValida) {
-      throw new Error('Contraseña incorrecta');
-    }
-
-    // Generar JWT
-    const token = jwt.sign(
-      {
-        id: usuario.id_usuario,
-        username: usuario.user_name,
-        nombre: usuario.nombres,
-        rol: usuario.rol
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    return {
-      token,
-      usuario: {
-        id: usuario.id_usuario,
-        username: usuario.user_name,
-        nombre: usuario.nombres,
-        apellidos: usuario.apellidos,
-        rol: usuario.rol
-      }
-    };
-  }
-
-  /**
    * Registro de cliente (público)
    */
   async registroCliente(username, password, nombre, apellidos = '', dni = null) {
