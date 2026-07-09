@@ -12,6 +12,9 @@ class UsuarioRepository {
   async guardar(usuario) {
     usuario.validar();
 
+    // Extraer username del email (parte antes del @)
+    const username = usuario.email.valor.split('@')[0];
+
     const query = `
       INSERT INTO usuario (user_name, contrasena, nombres, apellidos, rol, estado)
       VALUES ($1, $2, $3, $4, $5, $6)
@@ -25,7 +28,7 @@ class UsuarioRepository {
     `;
 
     const { rows } = await db.query(query, [
-      usuario.nombre,
+      username,
       usuario.contrasena,
       usuario.nombre,
       usuario.apellidos,
@@ -89,7 +92,7 @@ class UsuarioRepository {
       UPDATE usuario
       SET nombres = $1, apellidos = $2, estado = $3
       WHERE id_usuario = $4
-      RETURNING id_usuario, name_user, nombres, apellidos, estado
+      RETURNING id_usuario, user_name, nombres, apellidos, estado
     `;
 
     const { rows } = await db.query(query, [
