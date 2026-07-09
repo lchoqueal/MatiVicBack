@@ -27,7 +27,7 @@ describe('AutenticacionApplicationService - unit', () => {
     jest.clearAllMocks();
   });
 
-  test('loginAdministrador debe retornar token y usuario', async () => {
+  test('login debe retornar token y usuario para cualquier rol activo', async () => {
     usuarioRepository.obtenerPorNombreUsuario.mockResolvedValue({
       id_usuario: 1,
       user_name: 'admin',
@@ -40,38 +40,34 @@ describe('AutenticacionApplicationService - unit', () => {
     bcrypt.compare.mockResolvedValue(true);
     jwt.sign.mockReturnValue('token-jwt');
 
-    const resultado = await service.loginAdministrador('admin', 'secreto');
+    const resultado = await service.login('admin', 'secreto');
 
     expect(resultado.token).toBe('token-jwt');
     expect(resultado.usuario.rol).toBe('administrador');
     expect(jwt.sign).toHaveBeenCalled();
   });
 
-  test('loginAdministrador debe fallar si usuario no existe', async () => {
+  test('login debe fallar si usuario no existe', async () => {
     usuarioRepository.obtenerPorNombreUsuario.mockResolvedValue(null);
 
-    await expect(service.loginAdministrador('admin', 'secreto')).rejects.toThrow('Usuario no encontrado');
+    await expect(service.login('admin', 'secreto')).rejects.toThrow('Usuario no encontrado');
   });
 
-  test('loginAdministrador debe fallar si rol no es administrador', async () => {
+  test('login debe fallar si usuario inactivo', async () => {
     usuarioRepository.obtenerPorNombreUsuario.mockResolvedValue({
       rol: 'cliente',
       estado: 'activo'
     });
 
-    await expect(service.loginAdministrador('admin', 'secreto')).rejects.toThrow('Acceso denegado');
-  });
-
-  test('loginAdministrador debe fallar si usuario inactivo', async () => {
     usuarioRepository.obtenerPorNombreUsuario.mockResolvedValue({
       rol: 'administrador',
       estado: 'inactivo'
     });
 
-    await expect(service.loginAdministrador('admin', 'secreto')).rejects.toThrow('Usuario inactivo');
+    await expect(service.login('admin', 'secreto')).rejects.toThrow('Usuario inactivo');
   });
 
-  test('loginAdministrador debe fallar si contrasena incorrecta', async () => {
+  test('login debe fallar si contrasena incorrecta', async () => {
     usuarioRepository.obtenerPorNombreUsuario.mockResolvedValue({
       rol: 'administrador',
       estado: 'activo',
@@ -79,25 +75,25 @@ describe('AutenticacionApplicationService - unit', () => {
     });
     bcrypt.compare.mockResolvedValue(false);
 
-    await expect(service.loginAdministrador('admin', 'secreto')).rejects.toThrow('Contraseña incorrecta');
+    await expect(service.login('admin', 'secreto')).rejects.toThrow('Contraseña incorrecta');
   });
 
-  test('registroAdministrador debe guardar usuario', async () => {
+  test('registroCliente debe guardar usuario', async () => {
     usuarioRepository.obtenerPorNombreUsuario.mockResolvedValue(null);
     usuarioRepository.guardar.mockResolvedValue({ id_usuario: 1 });
     bcrypt.genSalt.mockResolvedValue('salt');
     bcrypt.hash.mockResolvedValue('hash');
 
-    const resultado = await service.registroAdministrador('admin', 'secreto', 'admin', 'User');
+    const resultado = await service.registroCliente('admin', 'secreto', 'admin', 'User');
 
-    expect(resultado.mensaje).toBe('Administrador creado exitosamente');
+    expect(resultado.mensaje).toBe('Cliente registrado exitosamente');
     expect(usuarioRepository.guardar).toHaveBeenCalledWith(expect.any(Usuario));
   });
 
-  test('registroAdministrador debe fallar si usuario existe', async () => {
+  test('registroCliente debe fallar si usuario existe', async () => {
     usuarioRepository.obtenerPorNombreUsuario.mockResolvedValue({ id_usuario: 2 });
 
-    await expect(service.registroAdministrador('admin', 'secreto', 'admin', 'User')).rejects.toThrow('Usuario ya existe');
+    await expect(service.registroCliente('admin', 'secreto', 'admin', 'User')).rejects.toThrow('Usuario ya existe');
   });
 
   test('verificarToken debe retornar payload', async () => {
