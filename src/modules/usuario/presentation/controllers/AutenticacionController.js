@@ -8,7 +8,7 @@ class AutenticacionController {
   }
 
   /**
-   * POST /auth/login
+   * POST /auth/login (cualquier usuario activo)
    */
   async login(req, res, next) {
     try {
@@ -22,7 +22,7 @@ class AutenticacionController {
         });
       }
 
-      const resultado = await this.autenticacionApplicationService.loginAdministrador(username, password);
+      const resultado = await this.autenticacionApplicationService.login(username, password);
 
       return res.status(200).json({
         success: true,
@@ -34,11 +34,11 @@ class AutenticacionController {
   }
 
   /**
-   * POST /auth/registro
+   * POST /auth/registro (publico - cliente)
    */
   async registro(req, res, next) {
     try {
-      const { username, password, nombre, apellidos } = req.body;
+      const { username, password, nombre, apellidos, dni } = req.body;
 
       if (!username || !password || !nombre) {
         return res.status(400).json({
@@ -48,11 +48,55 @@ class AutenticacionController {
         });
       }
 
-      const resultado = await this.autenticacionApplicationService.registroAdministrador(
+      const resultado = await this.autenticacionApplicationService.registroCliente(
         username,
         password,
         nombre,
-        apellidos
+        apellidos,
+        dni
+      );
+
+      return res.status(201).json({
+        success: true,
+        data: resultado
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /auth/empleados (protegida - solo admin)
+   */
+  async crearEmpleado(req, res, next) {
+    try {
+      const { username, password, nombre, apellidos, dni, fechaIngreso, horario, rol } = req.body;
+
+      if (!username || !password || !nombre) {
+        return res.status(400).json({
+          success: false,
+          codigo: 'DATOS_INCOMPLETOS',
+          mensaje: 'Username, password y nombre son requeridos'
+        });
+      }
+
+      if (!fechaIngreso || !horario) {
+        return res.status(400).json({
+          success: false,
+          codigo: 'DATOS_EMPLEADO_INCOMPLETOS',
+          mensaje: 'Fecha ingreso y horario son requeridos'
+        });
+      }
+
+      const resultado = await this.autenticacionApplicationService.crearEmpleado(
+        username,
+        password,
+        nombre,
+        apellidos,
+        dni,
+        fechaIngreso,
+        horario,
+        rol
       );
 
       return res.status(201).json({
