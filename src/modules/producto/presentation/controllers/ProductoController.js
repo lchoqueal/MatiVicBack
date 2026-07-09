@@ -6,13 +6,11 @@ class ProductoController {
   constructor(
     obtenerProductosApplicationService,
     actualizarProductoApplicationService,
-    eliminarProductoApplicationService,
-    crearProductoApplicationService
+    eliminarProductoApplicationService
   ) {
     this.obtenerProductosApplicationService = obtenerProductosApplicationService;
     this.actualizarProductoApplicationService = actualizarProductoApplicationService;
     this.eliminarProductoApplicationService = eliminarProductoApplicationService;
-    this.crearProductoApplicationService = crearProductoApplicationService;
   }
 
   /**
@@ -25,33 +23,6 @@ class ProductoController {
       return res.status(200).json({
         success: true,
         data: resultado
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  /**
-   * POST /productos
-   */
-  async crear(req, res, next) {
-    try {
-      const { nombre, stock, minStock, precio, descripcion = '', imagenUrl = '', idCategoria = null } = req.body;
-
-      const resultado = await this.crearProductoApplicationService.ejecutar({
-        nombre,
-        stock,
-        minStock,
-        precio,
-        descripcion,
-        imagenUrl,
-        idCategoria
-      });
-
-      return res.status(201).json({
-        success: true,
-        data: resultado,
-        message: 'Producto creado exitosamente'
       });
     } catch (error) {
       next(error);
