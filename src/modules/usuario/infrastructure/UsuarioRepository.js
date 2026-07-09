@@ -12,23 +12,28 @@ class UsuarioRepository {
   async guardar(usuario) {
     usuario.validar();
 
+    // Extraer username del email (parte antes del @)
+    const username = usuario.email.valor.split('@')[0];
+
     const query = `
-      INSERT INTO usuario (user_name, contrasena, nombres, apellidos, rol, estado)
-      VALUES ($1, $2, $3, $4, $5, $6)
+      INSERT INTO usuario (user_name, contrasena, nombres, apellidos, dni, rol, estado)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       ON CONFLICT (user_name) DO UPDATE SET
         contrasena = EXCLUDED.contrasena,
         nombres = EXCLUDED.nombres,
         apellidos = EXCLUDED.apellidos,
+        dni = EXCLUDED.dni,
         rol = EXCLUDED.rol,
         estado = EXCLUDED.estado
-      RETURNING id_usuario, user_name, contrasena, nombres, apellidos, rol, estado
+      RETURNING id_usuario, user_name, contrasena, nombres, apellidos, dni, rol, estado
     `;
 
     const { rows } = await db.query(query, [
-      usuario.nombre,
+      username,
       usuario.contrasena,
       usuario.nombre,
       usuario.apellidos,
+      usuario.dni || null,
       usuario.rol,
       usuario.estado
     ]);
@@ -41,7 +46,7 @@ class UsuarioRepository {
    */
   async obtenerPorId(id) {
     const query = `
-      SELECT id_usuario, user_name, contrasena, nombres, apellidos, rol, estado
+      SELECT id_usuario, user_name, contrasena, nombres, apellidos, dni, rol, estado
       FROM usuario
       WHERE id_usuario = $1
     `;
@@ -55,7 +60,7 @@ class UsuarioRepository {
    */
   async obtenerPorNombreUsuario(nombreUsuario) {
     const query = `
-      SELECT id_usuario, user_name, contrasena, nombres, apellidos, rol, estado
+      SELECT id_usuario, user_name, contrasena, nombres, apellidos, dni, rol, estado
       FROM usuario
       WHERE user_name = $1
     `;
@@ -69,7 +74,7 @@ class UsuarioRepository {
    */
   async obtenerTodos() {
     const query = `
-      SELECT id_usuario, user_name, nombres, apellidos, rol, estado
+      SELECT id_usuario, user_name, nombres, apellidos, dni, rol, estado
       FROM usuario
       WHERE estado = 'activo'
       ORDER BY nombres
@@ -89,7 +94,7 @@ class UsuarioRepository {
       UPDATE usuario
       SET nombres = $1, apellidos = $2, estado = $3
       WHERE id_usuario = $4
-      RETURNING id_usuario, name_user, nombres, apellidos, estado
+      RETURNING id_usuario, user_name, nombres, apellidos, estado
     `;
 
     const { rows } = await db.query(query, [
