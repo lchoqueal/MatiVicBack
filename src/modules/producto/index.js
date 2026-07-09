@@ -3,6 +3,7 @@ const ObtenerProductosApplicationService = require('./application/ObtenerProduct
 const ObtenerAlertasApplicationService = require('./application/ObtenerAlertasApplicationService');
 const ActualizarProductoApplicationService = require('./application/ActualizarProductoApplicationService');
 const EliminarProductoApplicationService = require('./application/EliminarProductoApplicationService');
+const CrearProductoApplicationService = require('./application/CrearProductoApplicationService');
 
 const productoRoutes = require('./presentation/routes/productoRoutes');
 const alertasRoutes = require('./presentation/routes/alertasRoutes');
@@ -20,12 +21,14 @@ module.exports = (socketIOEmitter) => {
         socketIOEmitter
     );
     const eliminarProductoApplicationService = new EliminarProductoApplicationService(productoRepository);
+    const crearProductoApplicationService = new CrearProductoApplicationService(productoRepository);
 
     return {
         productoRoutes: productoRoutes(
             obtenerProductosApplicationService,
             actualizarProductoApplicationService,
-            eliminarProductoApplicationService
+            eliminarProductoApplicationService,
+            crearProductoApplicationService
         ),
         alertasRoutes: alertasRoutes(obtenerAlertasApplicationService)
     };
