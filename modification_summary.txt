@@ -1,0 +1,21 @@
+Resumen de cambios realizados:
+
+1. Archivos de pruebas creados o modificados:
+   - tests/unit/modules/boleta/application/CrearBoletaApplicationService.test.js
+   - tests/unit/modules/boleta/infrastructure/BoletaRepository.test.js
+   - tests/unit/modules/boleta/domain/entities/Boleta.test.js
+   - tests/unit/modules/boleta/domain/valueObjects/TipoVenta.test.js
+   - tests/unit/modules/boleta/domain/entities/TipoMetodoPago.test.js
+
+2. Correcciones mínimas en el código fuente (necesarias para que los tests se ejecuten):
+   - src/modules/boleta/infrastructure/BoletaRepository.js
+     - Ajusté la ruta relativa de require para shared/config/db y shared/domain/valueObjects/Precio.
+   - src/modules/boleta/application/CrearBoletaApplicationService.js
+     - Ajusté la ruta relativa de require para shared/domain/valueObjects/Precio y shared/config/db.
+
+3. Resultado de las pruebas:
+   - 5 suites ejecutadas
+   - 25 tests pasaron
+   - Ninguna prueba falló después de los ajustes
+
+Nota: No modifiqué carpetas ajenas a `tests/` salvo estas dos correcciones puntuales en `src/modules/boleta` que eran necesarias para que el módulo se pudiera cargar desde los tests.

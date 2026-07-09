@@ -1,0 +1,108 @@
+name: Pipeline CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Tests
+        run: npm test -- --passWithNoTests
+
+      - name: Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Sacar Tag Corto
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Build y Push Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: an7hony16/pedidos-api:v1.1.${{ steps.vars.outputs.sha_short }}
+
+      - name: Actualizar Repo GitOps
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          
+          # Clonamos especificando explícitamente el nombre de la carpeta de destino 'repo-b'
+          # Usamos de forma segura el secret GITOPS_TOKEN para no exponer credenciales
+          git clone https://${{ secrets.GITOPS_TOKEN }}@github.com/lchoqueal/mi-proyecto-gitops.git repo-b
+          
+          cd repo-b
+          mkdir -p k8s/desarrollo
+          
+          NEW_TAG="v1.1.${{ steps.vars.outputs.sha_short }}"
+          
+          # Si el deployment.yaml no existe, creamos la plantilla base solicitada
+          if [ ! -f k8s/desarrollo/deployment.yaml ]; then
+            cat <<EOF > k8s/desarrollo/deployment.yaml
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: core-service-pedidos
+            namespace: pedidos-env
+          spec:
+            replicas: 2
+            selector:
+              matchLabels:
+                app: pedidos-api
+            template:
+              metadata:
+                labels:
+                  app: pedidos-api
+              spec:
+                containers:
+                - name: pedidos-api
+                  image: an7hony16/pedidos-api:$NEW_TAG
+                  ports:
+                  - containerPort: 8080
+                  env:
+                  - name: DATABASE_URL
+                    valueFrom:
+                      secretKeyRef:
+                        name: supabase-db-secrets
+                        key: DATABASE_URL
+                  livenessProbe:
+                    httpGet:
+                      path: /health/live
+                      port: 8080
+                    initialDelaySeconds: 15
+                  readinessProbe:
+                    httpGet:
+                      path: /health/ready
+                      port: 8080
+          EOF
+          else
+            # Si ya existe el manifiesto, modificamos únicamente la línea de la imagen de manera quirúrgica
+            sed -i "s|image: an7hony16/pedidos-api:.*|image: an7hony16/pedidos-api:$NEW_TAG|g" k8s/desarrollo/deployment.yaml
+          fi
+          
+          git add k8s/desarrollo/deployment.yaml
+          git commit -m "chore(ci): actualizar imagen a $NEW_TAG"
+          git push origin main

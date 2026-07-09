@@ -5,9 +5,6 @@ module.exports = (socketIOEmitter) => {
   const clienteRepository = new ClienteRepository();
   const router = express.Router();
 
-  // Actualmente no hay rutas específicas para cliente en presentation/
-  // Mantenemos un router vacío para que app.use pueda montarlo sin romper el arranque.
-  router.clienteRepository = clienteRepository;
-
-  return router;
+  // No hay rutas de cliente todavía, pero Express necesita un router válido.
+  return express.Router();
 };
