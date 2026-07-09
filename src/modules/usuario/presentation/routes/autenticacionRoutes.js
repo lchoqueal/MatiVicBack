@@ -1,6 +1,6 @@
 const express = require('express');
 const AutenticacionController = require('../controllers/AutenticacionController');
-const { autenticacionMiddleware } = require('../../../../shared/middleware/autenticacionMiddleware');
+const autenticacionMiddleware = require('../../../../shared/middleware/autenticacionMiddleware');
 const { rolMiddleware } = require('../../../../shared/middleware/rolMiddleware');
 
 module.exports = (autenticacionApplicationService) => {
