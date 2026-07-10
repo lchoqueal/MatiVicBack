@@ -1,7 +1,7 @@
 const express = require('express');
 const AutenticacionController = require('../controllers/AutenticacionController');
-const { autenticacionMiddleware } = require('../../../../shared/middleware/autenticacionMiddleware');
-const { rolMiddleware } = require('../../../../shared/middleware/rolMiddleware');
+const autenticacionMiddleware = require('../../../../shared/middleware/autenticacionMiddleware');
+const { esAdministrador } = require('../../../../shared/middleware/rolMiddleware');
 
 module.exports = (autenticacionApplicationService) => {
   const router = express.Router();
@@ -16,7 +16,7 @@ module.exports = (autenticacionApplicationService) => {
   // POST /auth/empleados (protegida - solo admin)
   router.post('/empleados', 
     autenticacionMiddleware, 
-    rolMiddleware(['administrador']),
+    esAdministrador,
     (req, res, next) => controller.crearEmpleado(req, res, next)
   );
 
