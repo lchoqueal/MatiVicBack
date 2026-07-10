@@ -59,51 +59,8 @@ jobs:
           
           NEW_TAG="v1.1.${{ steps.vars.outputs.sha_short }}"
           
-          # Si el deployment.yaml no existe, creamos la plantilla base solicitada
-          if [ ! -f k8s/desarrollo/deployment.yaml ]; then
-            cat <<EOF > k8s/desarrollo/deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: core-service-pedidos
-  namespace: pedidos-env
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: pedidos-api
-  template:
-    metadata:
-      labels:
-        app: pedidos-api
-    spec:
-      containers:
-      - name: pedidos-api
-        image: an7hony16/pedidos-api:${NEW_TAG}
-        ports:
-        - containerPort: 3000
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: supabase-db-secrets
-              key: DATABASE_URL
-        - name: OTEL_SERVICE_NAME
-          value: "pedidos-api"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 15
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-EOF
-          else
-            # Si ya existe el manifiesto, modificamos únicamente la línea de la imagen de manera quirúrgica
-            sed -i "s|image: an7hony16/pedidos-api:.*|image: an7hony16/pedidos-api:${NEW_TAG}|g" k8s/desarrollo/deployment.yaml
-          fi
+          # Modificamos únicamente la línea de la imagen de manera quirúrgica
+          sed -i "s|image: an7hony16/pedidos-api:.*|image: an7hony16/pedidos-api:${NEW_TAG}|g" k8s/desarrollo/deployment.yaml
           
           git add k8s/desarrollo/deployment.yaml
           git commit -m "chore(ci): actualizar imagen a $NEW_TAG"
