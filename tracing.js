@@ -4,7 +4,7 @@ const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-grpc')
 
 const sdk = new NodeSDK({
     traceExporter: new OTLPTraceExporter({
-        url: 'otel-collector.monitoring.svc.cluster.local:4317',
+        url: 'http://otel-collector.monitoring.svc.cluster.local:4317',
     }),
     instrumentations: [getNodeAutoInstrumentations()],
 });
