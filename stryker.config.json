@@ -1,0 +1,24 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "Configuración de Stryker para evaluar la calidad de los tests de MatiVicBack",
+  "packageManager": "npm",
+  "reporters": [
+    "html",
+    "clear-text",
+    "progress"
+  ],
+  "testRunner": "jest",
+  "testRunner_comment": "Usa Jest como suite de ejecución de pruebas",
+  "coverageAnalysis": "perTest",
+  "mutate": [
+    "src/modules/boleta/domain/entities/Boleta.js",
+    "src/modules/producto/domain/entities/Producto.js",
+    "src/modules/producto/domain/valueObjects/Stock.js",
+    "src/shared/domain/valueObjects/Precio.js"
+  ],
+  "thresholds": {
+    "high": 80,
+    "low": 60,
+    "break": 50
+  }
+}
