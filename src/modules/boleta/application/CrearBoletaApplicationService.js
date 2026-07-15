@@ -71,6 +71,8 @@ class CrearBoletaApplicationService {
 
         // Validar stock nuevamente
         if (productoLocked.stock < item.cantidad) {
+          const { stockValidationFailuresTotal } = require('../../../shared/infrastructure/monitoring/metrics');
+          stockValidationFailuresTotal.inc({ product_id: item.id_producto });
           throw new Error(`Stock insuficiente para producto ${item.id_producto}`);
         }
 

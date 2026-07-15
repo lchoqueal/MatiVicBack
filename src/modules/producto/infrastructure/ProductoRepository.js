@@ -48,9 +48,10 @@ class ProductoRepository {
    */
   async obtenerPorId(id) {
     const query = `
-      SELECT id_producto, nombre, stock, min_stock, precio_unit, estado, descripcion, imagen_url, id_categoria
-      FROM producto
-      WHERE id_producto = $1
+      SELECT p.id_producto, p.nombre, p.stock, p.min_stock, p.precio_unit, p.estado, p.descripcion, p.imagen_url, p.id_categoria, c.nombre as categoria
+      FROM producto p
+      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+      WHERE p.id_producto = $1
     `;
 
     const { rows } = await db.query(query, [id]);
@@ -62,10 +63,11 @@ class ProductoRepository {
    */
   async obtenerTodos() {
     const query = `
-      SELECT id_producto, nombre, stock, min_stock, precio_unit, estado, descripcion, imagen_url, id_categoria
-      FROM producto
-      WHERE estado = 'activo'
-      ORDER BY nombre
+      SELECT p.id_producto, p.nombre, p.stock, p.min_stock, p.precio_unit, p.estado, p.descripcion, p.imagen_url, p.id_categoria, c.nombre as categoria
+      FROM producto p
+      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+      WHERE p.estado = 'activo'
+      ORDER BY p.nombre
     `;
 
     const { rows } = await db.query(query);
@@ -77,10 +79,11 @@ class ProductoRepository {
    */
   async buscarPorNombre(nombre) {
     const query = `
-      SELECT id_producto, nombre, stock, min_stock, precio_unit, estado, descripcion, imagen_url, id_categoria
-      FROM producto
-      WHERE nombre ILIKE $1 AND estado = 'activo'
-      ORDER BY nombre
+      SELECT p.id_producto, p.nombre, p.stock, p.min_stock, p.precio_unit, p.estado, p.descripcion, p.imagen_url, p.id_categoria, c.nombre as categoria
+      FROM producto p
+      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+      WHERE p.nombre ILIKE $1 AND p.estado = 'activo'
+      ORDER BY p.nombre
     `;
 
     const { rows } = await db.query(query, [`%${nombre}%`]);
@@ -92,10 +95,11 @@ class ProductoRepository {
    */
   async obtenerStockBajo() {
     const query = `
-      SELECT id_producto, nombre, stock, min_stock, precio_unit, estado, descripcion, imagen_url, id_categoria
-      FROM producto
-      WHERE stock <= min_stock AND estado = 'activo'
-      ORDER BY stock ASC
+      SELECT p.id_producto, p.nombre, p.stock, p.min_stock, p.precio_unit, p.estado, p.descripcion, p.imagen_url, p.id_categoria, c.nombre as categoria
+      FROM producto p
+      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+      WHERE p.stock <= p.min_stock AND p.estado = 'activo'
+      ORDER BY p.stock ASC
     `;
 
     const { rows } = await db.query(query);
@@ -142,12 +146,13 @@ class ProductoRepository {
    */
   async obtenerMasVendidos(limite = 10) {
     const query = `
-      SELECT p.id_producto, p.nombre, p.precio_unit, SUM(db.cantidad) as cantidad_vendida
+      SELECT p.id_producto, p.nombre, p.precio_unit, SUM(db.cantidad) as cantidad_vendida, c.nombre as categoria
       FROM producto p
       JOIN detalle_boleta db ON p.id_producto = db.id_producto
       JOIN boleta b ON db.id_boleta = b.id_boleta
+      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
       WHERE p.estado = 'activo' AND b.estado_boleta = 'pagado'
-      GROUP BY p.id_producto, p.nombre, p.precio_unit
+      GROUP BY p.id_producto, p.nombre, p.precio_unit, c.nombre
       ORDER BY cantidad_vendida DESC
       LIMIT $1
     `;
@@ -160,7 +165,7 @@ class ProductoRepository {
    * Mapear fila de BD a Entidad Producto
    */
   _mapearAProducto(fila) {
-    return new Producto(
+    const producto = new Producto(
       fila.id_producto,
       fila.nombre,
       new Precio(fila.precio_unit),
@@ -170,6 +175,9 @@ class ProductoRepository {
       fila.imagen_url,
       fila.id_categoria
     );
+    // Atributo dinámico para mantener el nombre de la categoría
+    producto.categoria = fila.categoria || null;
+    return producto;
   }
 }
 
