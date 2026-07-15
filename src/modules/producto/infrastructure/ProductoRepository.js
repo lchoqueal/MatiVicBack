@@ -15,8 +15,8 @@ class ProductoRepository {
     producto.validar();
 
     const query = `
-      INSERT INTO producto (nombre, stock, min_stock, precio_unit, estado, descripcion, imagen_url, id_categoria)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      INSERT INTO producto (id_producto, nombre, stock, min_stock, precio_unit, estado, descripcion, imagen_url, id_categoria)
+      VALUES (COALESCE($1, nextval('producto_id_producto_seq')), $2, $3, $4, $5, $6, $7, $8, $9)
       ON CONFLICT (id_producto) DO UPDATE SET
         nombre = EXCLUDED.nombre,
         stock = EXCLUDED.stock,
@@ -30,6 +30,7 @@ class ProductoRepository {
     `;
 
     const { rows } = await db.query(query, [
+      producto.id, // ID del producto (null si es nuevo)
       producto.nombre,
       producto.stock.cantidad,
       producto.minStock,
