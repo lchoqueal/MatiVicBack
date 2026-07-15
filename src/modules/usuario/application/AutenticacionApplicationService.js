@@ -8,9 +8,10 @@ const Email = require('../domain/valueObjects/Email');
  * Orquesta login y registro de usuarios
  */
 class AutenticacionApplicationService {
-  constructor(usuarioRepository, empleadoRepository = null) {
+  constructor(usuarioRepository, empleadoRepository = null, clienteRepository = null) {
     this.usuarioRepository = usuarioRepository;
     this.empleadoRepository = empleadoRepository;
+    this.clienteRepository = clienteRepository;
   }
 
   /**
@@ -40,8 +41,25 @@ class AutenticacionApplicationService {
     );
     nuevoUsuario.dni = dni;
 
-    // Guardar
+    // Guardar usuario en la base de datos
     const usuarioGuardado = await this.usuarioRepository.guardar(nuevoUsuario);
+
+    // Crear el registro correspondiente en la tabla 'cliente' para evitar violar FK
+    if (this.clienteRepository) {
+      const db = require('../../../shared/config/db');
+      const queryCliente = `
+        INSERT INTO cliente (id_usuario_cliente, telefono, correo, direccion, estado)
+        VALUES ($1, $2, $3, $4, $5)
+      `;
+      // Insertamos el cliente con valores por defecto / vacíos
+      await db.query(queryCliente, [
+        usuarioGuardado.id_usuario,
+        null, // Teléfono opcional
+        username + '@cliente.local', // Correo
+        null, // Dirección opcional
+        'activo'
+      ]);
+    }
 
     return {
       mensaje: 'Cliente registrado exitosamente',

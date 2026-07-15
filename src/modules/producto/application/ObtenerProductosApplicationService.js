@@ -61,13 +61,18 @@ class ObtenerProductosApplicationService {
   _serializarProducto(producto) {
     return {
       id: producto.id,
+      id_producto: producto.id, // Compatibilidad con el front
       nombre: producto.nombre,
       precio: producto.precio.monto,
+      precio_unit: producto.precio.monto, // Compatibilidad con el front
       stock: producto.stock.cantidad,
       minStock: producto.minStock,
+      min_stock: producto.minStock, // Compatibilidad con el front
       descripcion: producto.descripcion,
       imagenUrl: producto.imagenUrl,
+      imagen_url: producto.imagenUrl, // Compatibilidad con el front
       idCategoria: producto.idCategoria,
+      categoria: producto.categoria, // Nombre de texto de la categoría
       tieneStockBajo: producto.tieneStockBajo()
     };
   }

@@ -30,6 +30,44 @@ app.use(express.json());
 
 const socketIOEmitter = new SocketIOEmitter(io);
 
+// Middleware para recopilar métricas HTTP de Prometheus
+const { register, httpRequestsTotal, httpRequestDurationSeconds } = require('./shared/infrastructure/monitoring/metrics');
+
+app.use((req, res, next) => {
+  const start = process.hrtime();
+
+  res.on('finish', () => {
+    const duration = process.hrtime(start);
+    const durationSeconds = duration[0] + duration[1] / 1e9;
+    
+    // Normalizar la ruta para evitar ensuciar Prometheus con IDs dinámicos (ej: /productos/12 -> /productos/:id)
+    let route = req.path;
+    if (req.params && Object.keys(req.params).length > 0) {
+      Object.keys(req.params).forEach(key => {
+        route = route.replace(req.params[key], `:${key}`);
+      });
+    }
+    // Reemplazar IDs numéricos genéricos por regex si no se resolvieron
+    route = route.replace(/\/\d+/g, '/:id');
+
+    // Registrar métricas
+    httpRequestsTotal.inc({ method: req.method, route, status: res.statusCode });
+    httpRequestDurationSeconds.observe({ method: req.method, route, status: res.statusCode }, durationSeconds);
+  });
+
+  next();
+});
+
+// Endpoint público para exponer las métricas recolectadas
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
+  } catch (err) {
+    res.status(500).end(err);
+  }
+});
+
 app.use('/categorias', moduloCategoria());
 app.use('/auth', moduloUsuario());
 app.use('/productos', moduloProducto(socketIOEmitter));

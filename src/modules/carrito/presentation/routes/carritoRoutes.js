@@ -14,8 +14,8 @@ module.exports = (
     carritoRepository
   );
 
-  // POST /carritos (requiere administrador o empleado)
-  router.post('/', autenticacionMiddleware, esAdministradorOEmpleado, validarCamposRequeridos(['tipoCarrito']), (req, res, next) => controller.crear(req, res, next));
+  // POST /carritos (requiere autenticación para asociar el cliente)
+  router.post('/', autenticacionMiddleware, validarCamposRequeridos(['tipoCarrito']), (req, res, next) => controller.crear(req, res, next));
 
   // GET /carritos/:id (público por ahora)
   router.get('/:id', (req, res, next) => controller.obtenerPorId(req, res, next));

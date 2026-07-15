@@ -21,8 +21,8 @@ class Precio {
       throw new DomainException('Precio debe ser un número', 400, 'PRECIO_NO_NUMERO');
     }
 
-    if (montoNum <= 0) {
-      throw new DomainException('Precio debe ser mayor a 0', 400, 'PRECIO_NO_POSITIVO');
+    if (montoNum < 0) {
+      throw new DomainException('Precio debe ser mayor o igual a 0', 400, 'PRECIO_NO_POSITIVO');
     }
 
     if (montoNum > 999999999.99) {
