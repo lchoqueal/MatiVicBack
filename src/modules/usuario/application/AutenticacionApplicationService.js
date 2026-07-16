@@ -40,6 +40,7 @@ class AutenticacionApplicationService {
       'activo'
     );
     nuevoUsuario.dni = dni;
+    nuevoUsuario.userName = username;
 
     // Guardar usuario en la base de datos
     const usuarioGuardado = await this.usuarioRepository.guardar(nuevoUsuario);
@@ -116,6 +117,7 @@ class AutenticacionApplicationService {
       'activo'
     );
     nuevoUsuario.dni = dni;
+    nuevoUsuario.userName = username;
 
     // Guardar usuario
     const usuarioGuardado = await this.usuarioRepository.guardar(nuevoUsuario);
