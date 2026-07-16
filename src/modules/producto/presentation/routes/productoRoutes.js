@@ -7,13 +7,15 @@ const { validarPositivo } = require('../../../../shared/middleware/validacionMid
 module.exports = (
   obtenerProductosApplicationService,
   actualizarProductoApplicationService,
-  eliminarProductoApplicationService
+  eliminarProductoApplicationService,
+  crearProductoApplicationService
 ) => {
   const router = express.Router();
   const controller = new ProductoController(
     obtenerProductosApplicationService,
     actualizarProductoApplicationService,
-    eliminarProductoApplicationService
+    eliminarProductoApplicationService,
+    crearProductoApplicationService
   );
 
   // GET /productos/buscar (DEBE ir antes de /:id)
@@ -27,6 +29,9 @@ module.exports = (
 
   // GET /productos
   router.get('/', (req, res, next) => controller.obtenerTodos(req, res, next));
+
+  // POST /productos (requiere administrador)
+  router.post('/', autenticacionMiddleware, esAdministrador, (req, res, next) => controller.crear(req, res, next));
 
   // PUT /productos/:id (requiere administrador)
   router.put('/:id', autenticacionMiddleware, esAdministrador, validarPositivo('precio'), (req, res, next) => controller.actualizar(req, res, next));
