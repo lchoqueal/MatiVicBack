@@ -195,41 +195,33 @@ class BoletaController {
         });
       }
 
-      const PASARELA_URL = process.env.PASARELA_API_URL || 'http://localhost:4000/api/payments';
-      const FRONT_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const FRONT_URL = process.env.FRONTEND_URL || 'https://matvicfront-main.onrender.com';
 
-      // Llamar a la pasarela para inicializar la sesión
-      const pasarelaResponse = await fetch(`${PASARELA_URL}/initialize`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: boleta.total?.monto ?? boleta.total,
-          orderId: String(id),
-          successUrl: `${FRONT_URL}/pago-exitoso?boleta=${id}`,
-          failureUrl: `${FRONT_URL}/pago-fallido?boleta=${id}`
-        })
-      });
+      // --- INICIO DE SIMULACIÓN DE PASARELA (Opción A) ---
+      // Como no hay pasarela en producción, simulamos un 80% de pagos exitosos
+      const isSuccess = Math.random() > 0.2; 
+      
+      const nuevoEstado = isSuccess ? 'pagado' : 'cancelado';
+      
+      // Actualizamos el estado directamente en la base de datos (simulando el webhook)
+      await this.boletaRepository.actualizarEstado(parseInt(id), nuevoEstado);
 
-      const pasarelaData = await pasarelaResponse.json();
+      const redirectUrl = isSuccess 
+        ? `${FRONT_URL}/pago-exitoso?boleta=${id}`
+        : `${FRONT_URL}/pago-fallido?boleta=${id}`;
 
-      if (!pasarelaResponse.ok || !pasarelaData.redirectUrl) {
-        console.error('[iniciarPago] Error de pasarela:', pasarelaData);
-        return res.status(502).json({
-          success: false,
-          codigo: 'PASARELA_ERROR',
-          mensaje: 'No se pudo inicializar el pago con la pasarela'
-        });
-      }
+      const tokenSimulado = 'simulated_token_' + Date.now();
 
-      console.log(`[iniciarPago] Boleta ${id} → Token: ${pasarelaData.token} → URL: ${pasarelaData.redirectUrl}`);
+      console.log(`[iniciarPago SIMULADO] Boleta ${id} → Estado: ${nuevoEstado} → Token: ${tokenSimulado} → URL: ${redirectUrl}`);
 
       return res.status(200).json({
         success: true,
         data: {
-          token: pasarelaData.token,
-          redirectUrl: pasarelaData.redirectUrl
+          token: tokenSimulado,
+          redirectUrl: redirectUrl
         }
       });
+      // --- FIN DE SIMULACIÓN ---
     } catch (error) {
       next(error);
     }
