@@ -12,7 +12,7 @@ class ActualizarProductoApplicationService {
    * Ejecutar actualización de producto
    */
   async ejecutar(comando) {
-    const { idProducto, nombre, precio, minStock, descripcion, imagenUrl, idCategoria } = comando;
+    const { idProducto, nombre, precio, minStock, stock, descripcion, imagenUrl, idCategoria } = comando;
 
     // 1. Obtener producto existente
     const productoExistente = await this.productoRepository.obtenerPorId(idProducto);
@@ -23,8 +23,16 @@ class ActualizarProductoApplicationService {
 
     // 2. Actualizar atributos
     if (nombre) productoExistente.nombre = nombre;
-    if (precio) productoExistente.cambiarPrecio(precio);
-    if (minStock) productoExistente.minStock = minStock;
+    if (precio !== undefined) productoExistente.cambiarPrecio(precio);
+    
+    if (stock !== undefined || minStock !== undefined) {
+      const Stock = require('../domain/valueObjects/Stock');
+      const nuevaCantidad = stock !== undefined ? stock : productoExistente.stock.cantidad;
+      const nuevoMinimo = minStock !== undefined ? minStock : productoExistente.minStock;
+      
+      productoExistente.stock = new Stock(nuevaCantidad, nuevoMinimo);
+      productoExistente.minStock = parseInt(nuevoMinimo, 10);
+    }
     if (descripcion) productoExistente.descripcion = descripcion;
     if (imagenUrl) productoExistente.imagenUrl = imagenUrl;
     if (idCategoria) productoExistente.idCategoria = idCategoria;

@@ -126,12 +126,13 @@ class ProductoController {
   async actualizar(req, res, next) {
     try {
       const { id } = req.params;
-      const { nombre, precio, minStock, descripcion, imagenUrl, idCategoria } = req.body;
+      const { nombre, precio, stock, minStock, descripcion, imagenUrl, idCategoria } = req.body;
 
       const resultado = await this.actualizarProductoApplicationService.ejecutar({
         idProducto: parseInt(id),
         nombre,
         precio,
+        stock,
         minStock,
         descripcion,
         imagenUrl,
