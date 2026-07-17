@@ -21,7 +21,7 @@ module.exports = (
   router.get('/cliente/:idCliente', autenticacionMiddleware, (req, res, next) => controller.obtenerPorCliente(req, res, next));
 
   // GET /boletas/empleado/:idEmpleado (ANTES de /:id)
-  router.get('/empleado/:idEmpleado', autenticacionMiddleware, esAdministrador, (req, res, next) => controller.obtenerPorEmpleado(req, res, next));
+  router.get('/empleado/:idEmpleado', autenticacionMiddleware, esAdministradorOEmpleado, (req, res, next) => controller.obtenerPorEmpleado(req, res, next));
 
   // GET /boletas/:id (dinámica, va después)
   router.get('/:id', autenticacionMiddleware, (req, res, next) => controller.obtenerPorId(req, res, next));
