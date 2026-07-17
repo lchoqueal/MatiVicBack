@@ -125,10 +125,23 @@ class BoletaRepository {
    */
   async obtenerPagadas(fechaInicio = null, fechaFin = null) {
     let query = `
-      SELECT id_boleta, tipo_venta, metodo_pago, total, estado_boleta,
-             id_cliente_boleta, id_empleado_boleta, id_locale, id_carrito, fecha_emision
-      FROM boleta
-      WHERE estado_boleta = 'pagado'
+      SELECT b.id_boleta, b.tipo_venta, b.metodo_pago, b.total, b.estado_boleta,
+             b.id_cliente_boleta, b.id_empleado_boleta, b.id_locale, b.id_carrito, b.fecha_emision,
+             (
+               SELECT json_agg(
+                 json_build_object(
+                   'id_producto', p.id_producto,
+                   'nombre', p.nombre,
+                   'cantidad', dc.cantidad,
+                   'precio_unit', p.precio_unit
+                 )
+               )
+               FROM detalles_carrito dc
+               JOIN productos p ON p.id_producto = dc.id_producto
+               WHERE dc.id_carrito = b.id_carrito
+             ) as detalles
+      FROM boleta b
+      WHERE b.estado_boleta = 'pagado'
     `;
 
     const params = [];
@@ -141,7 +154,11 @@ class BoletaRepository {
     query += ` ORDER BY fecha_emision DESC`;
 
     const { rows } = await db.query(query, params);
-    return rows.map(row => this._mapearABoleta(row));
+    return rows.map(row => {
+      const boleta = this._mapearABoleta(row);
+      boleta.detalles = row.detalles || [];
+      return boleta;
+    });
   }
 
   /**

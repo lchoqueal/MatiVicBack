@@ -83,7 +83,8 @@ class ObtenerReportesApplicationService {
       total: boleta.total.monto,
       metodoPago: boleta.metodoPago,
       estado: boleta.estado,
-      fechaEmision: boleta.fechaEmision
+      fechaEmision: boleta.fechaEmision,
+      detalles: boleta.detalles
     };
   }
 }
