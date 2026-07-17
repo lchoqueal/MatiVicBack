@@ -87,7 +87,7 @@ class BoletaRepository {
               'precio_unit', p.precio_unit
             )
           )
-          FROM detalles_carrito dc
+          FROM detalle_carrito dc
           JOIN productos p ON p.id_producto = dc.id_producto
           WHERE dc.id_carrito = b.id_carrito
         ) as detalles
@@ -136,7 +136,7 @@ class BoletaRepository {
                    'precio_unit', p.precio_unit
                  )
                )
-               FROM detalles_carrito dc
+               FROM detalle_carrito dc
                JOIN productos p ON p.id_producto = dc.id_producto
                WHERE dc.id_carrito = b.id_carrito
              ) as detalles
