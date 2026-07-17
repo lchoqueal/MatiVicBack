@@ -10,9 +10,31 @@ class CategoriaRepository {
    * Guardar categoría (crear o actualizar)
    */
   async guardar(categoria) {
+    // Si es una nueva categoría (sin id), calculamos el siguiente orden automáticamente
+    // para evitar la violación del unique constraint en la columna 'orden'
+    if (!categoria.id) {
+      const query = `
+        INSERT INTO categoria (nombre, descripcion, orden, estado)
+        VALUES ($1, $2, (SELECT COALESCE(MAX(orden), 0) + 1 FROM categoria), $3)
+        ON CONFLICT (nombre) DO UPDATE SET
+          descripcion = EXCLUDED.descripcion,
+          estado = EXCLUDED.estado
+        RETURNING id_categoria, nombre, descripcion, orden, estado
+      `;
+
+      const { rows } = await db.query(query, [
+        categoria.nombre,
+        categoria.descripcion,
+        categoria.estado
+      ]);
+
+      return this._mapearACategoria(rows[0]);
+    }
+
+    // Si tiene id, es una actualización
     const query = `
-      INSERT INTO categoria (nombre, descripcion, orden, estado)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO categoria (id_categoria, nombre, descripcion, orden, estado)
+      VALUES ($1, $2, $3, $4, $5)
       ON CONFLICT (id_categoria) DO UPDATE SET
         nombre = EXCLUDED.nombre,
         descripcion = EXCLUDED.descripcion,
@@ -22,6 +44,7 @@ class CategoriaRepository {
     `;
 
     const { rows } = await db.query(query, [
+      categoria.id,
       categoria.nombre,
       categoria.descripcion,
       categoria.orden,

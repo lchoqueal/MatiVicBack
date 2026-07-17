@@ -26,7 +26,7 @@ class UsuarioRepository {
     `;
 
     const { rows } = await db.query(query, [
-      usuario.nombre,
+      usuario.userName || usuario.nombre,
       usuario.contrasena,
       usuario.nombre,
       usuario.apellidos,

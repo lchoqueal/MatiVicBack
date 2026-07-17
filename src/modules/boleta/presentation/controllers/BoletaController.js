@@ -91,7 +91,7 @@ class BoletaController {
     try {
       const { idCliente } = req.params;
 
-      const boletas = await this.boletaRepository.obtenerPorCliente(parseInt(idCliente));
+      const boletas = await this.boletaRepository.obtenerConDetallesPorCliente(parseInt(idCliente));
 
       return res.status(200).json({
         success: true,
@@ -102,7 +102,8 @@ class BoletaController {
             tipoVenta: b.tipoVenta.toString(),
             total: b.total.monto,
             estado: b.estado,
-            fechaEmision: b.fechaEmision
+            fechaEmision: b.fechaEmision,
+            detalles: b.detalles
           }))
         }
       });
