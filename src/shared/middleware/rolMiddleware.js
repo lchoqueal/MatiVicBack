@@ -4,7 +4,7 @@
  */
 
 const esAdministrador = (req, res, next) => {
-  if (req.usuario?.rol !== 'administrador') {
+  if (req.usuario?.rol?.toLowerCase() !== 'administrador') {
     return res.status(403).json({
       success: false,
       codigo: 'ACCESO_DENEGADO',
@@ -15,7 +15,7 @@ const esAdministrador = (req, res, next) => {
 };
 
 const esEmpleado = (req, res, next) => {
-  if (req.usuario?.rol !== 'empleado') {
+  if (req.usuario?.rol?.toLowerCase() !== 'empleado') {
     return res.status(403).json({
       success: false,
       codigo: 'ACCESO_DENEGADO',
@@ -26,7 +26,7 @@ const esEmpleado = (req, res, next) => {
 };
 
 const esCliente = (req, res, next) => {
-  if (req.usuario?.rol !== 'cliente') {
+  if (req.usuario?.rol?.toLowerCase() !== 'cliente') {
     return res.status(403).json({
       success: false,
       codigo: 'ACCESO_DENEGADO',
@@ -37,7 +37,8 @@ const esCliente = (req, res, next) => {
 };
 
 const esAdministradorOEmpleado = (req, res, next) => {
-  if (req.usuario?.rol !== 'administrador' && req.usuario?.rol !== 'empleado') {
+  const rol = req.usuario?.rol?.toLowerCase();
+  if (rol !== 'administrador' && rol !== 'empleado') {
     return res.status(403).json({
       success: false,
       codigo: 'ACCESO_DENEGADO',
